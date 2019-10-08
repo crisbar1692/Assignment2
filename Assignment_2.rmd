@@ -12,16 +12,16 @@ The first step will be use different libraries to build this model. This will be
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-install.packages("WikidataQueryServiceR")
-install.packages("rJava")
-install.packages("rcdk")
-install.packages("pls")
-install.packages("gplots")
-
-library("WikidataQueryServiceR")
-library("rJava")
-library("rcdk")
-library("pls")
+# install.packages("WikidataQueryServiceR")
+# install.packages("rJava")
+# install.packages("rcdk")
+# install.packages("pls")
+# install.packages("gplots")
+# 
+# library("WikidataQueryServiceR")
+# library("rJava")
+# library("rcdk")
+# library("pls")
 ```
  
  The next step is to make a query to obtain all the alkanes from wikidata with their boiling points and their smiles in order to be able to extract the features using rcdk package later.The important data extracted from wikidata will be names, boiling points, units of boiling points and smiles.
@@ -39,7 +39,46 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".
 }'
 results = query_wikidata(sparql_query)
 list_alkanes            <-results[,c(2,3,5,6)]
-colnames(list_alkanes)  <- c('Names','Boiling points','Units','Smiles')
+colnames(list_alkanes)  <- c('Name','Boiling_point','Unit','Smile')
 print(head(list_alkanes))
 ```
+In order to make the units homogenous, the alkanes which boiling points were found in Celsius or Fahrenheit will be change to Kelvin. Otherwise the results of the model might be invalid. All the boiling points of alkanes in Celsius will be put in the vector called Celsius, after that the units will be change into Kelvin in the list of alkanes. Same process will be repeated with alkanes in Fahrenheit.
 
+``` {r}
+#Change of Celsius - Kelvin
+
+Celsius<-list_alkanes[which(list_alkanes$Units=='degree Celsius'),2]
+list_alkanes[which(list_alkanes$Units=='degree Celsius'),2]<-Celsius+273.15
+
+#Change of Fahrenheit - Kelvin
+Farent<-list_alkanes[which(list_alkanes$Units=='degree Fahrenheit'),2]
+list_alkanes[which(list_alkanes$Units=='degree Fahrenheit'),2]<-(Farent - 32) * 5/9 + 273.15
+
+list_alkanes[,3] <-'Kelvin'
+
+```
+Now in order to build the model, the smiles will be parsed to be used in the rdck package to extract rest of the features that will be used in the regression model later on. As well, a list of descriptors that will be used in the model will be obtained with their values for each one of the alkanes. A final data frame with the values of each descriptor and the boiling points will be made to do the regression model.
+
+```{r}
+
+#parsing smiles
+parsed_smiles_alkanes<-parse.smiles(list_alkanes[,4])
+#select a list of descriptors to build the model from rcdk
+descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
+#Find the descriptors values for each alkane
+regression_data_alkanes <- eval.desc(parsed_smiles_alkanes,descriptor_names)
+
+#Converting the data in matrix to delete the NA
+regression_data_alkanes <- as.matrix(regression_data_alkanes)
+
+#Change the NA for zeros in order to avoid errors in the model
+regression_data_alkanes[which(is.na(regression_data_alkanes))]<- 0
+
+#Transform the descriptors vector in a data fram to be an acceptable input for the model.
+regression_data_alkanes <- as.data.frame(regression_data_alkanes)
+
+#Binding the last column with the boiling points to complete the regression data with the values that will be predicted
+regression_data_alkanes <- cbind(regression_data_alkanes,list_alkanes$Boiling_point)
+#Naming the last column of boiling points as "bp"
+colnames(regression_data_alkanes)[24] <-'bp'
+```
