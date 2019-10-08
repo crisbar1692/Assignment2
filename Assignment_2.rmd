@@ -65,10 +65,12 @@ Now in order to build the model, the smiles will be parsed to be used in the rdc
 parsed_smiles_alkanes<-parse.smiles(list_alkanes[,4])
 #select a list of descriptors to build the model from rcdk
 descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
-#Find the descriptors values for each alkane
+#Find the descriptors values for each alkane and putting them in a variable called
+#"regression_data_alkanes"
+
 regression_data_alkanes <- eval.desc(parsed_smiles_alkanes,descriptor_names)
 
-#Converting the data in matrix to delete the NA
+#Converting the data in matrix to remove the NA
 regression_data_alkanes <- as.matrix(regression_data_alkanes)
 
 #Change the NA for zeros in order to avoid errors in the model
@@ -81,4 +83,13 @@ regression_data_alkanes <- as.data.frame(regression_data_alkanes)
 regression_data_alkanes <- cbind(regression_data_alkanes,list_alkanes$Boiling_point)
 #Naming the last column of boiling points as "bp"
 colnames(regression_data_alkanes)[24] <-'bp'
+```
+Now that the data frame with all the dependent and independent variables is ready, the regression model can be made based in this data. First a train and data set should be selected.
+```{r}
+#Defining train set as the first 115 alkanes of the list
+train_set <-regression_data_alkanes[1:115,]
+#Defining test set as the last 28 alkanes of the list
+test_set<- regression_data_alkanes[116:143,]
+#defining the model using pls package
+pls <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```
