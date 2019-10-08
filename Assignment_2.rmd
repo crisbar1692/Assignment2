@@ -1,0 +1,56 @@
+---
+title: "Assig2_Mark"
+output: html_document
+---
+
+Libraries
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+install.packages("WikidataQueryServiceR")
+install.packages("rJava")
+install.packages("rcdk")
+install.packages("pls")
+install.packages("gplots")
+
+library("WikidataQueryServiceR")
+library("rJava")
+library("rcdk")
+library("pls")
+```
+
+Query for the alkanes and their properties
+
+```{r}
+results_table<-results[,c(2,3,5,6)]
+
+#change everything to Kelvin
+
+results_kelvin<-results_table
+
+Celsius<-results_table[which(results_table$bpUnitLabel=='degree Celsius'),2]
+results_kelvin[which(results_table$bpUnitLabel=='degree Celsius'),2]<-Celsius+273.15
+
+Farent<-results_table[which(results_table$bpUnitLabel=='degree Fahrenheit'),2]
+results_kelvin[which(results_table$bpUnitLabel=='degree Fahrenheit'),2]<-(Farent ??? 32) * 5/9 + 273.15
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
