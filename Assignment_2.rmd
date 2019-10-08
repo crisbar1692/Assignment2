@@ -1,9 +1,14 @@
 ---
-title: "Assig2_Mark"
+title: "Assignment 2"
 output: html_document
 ---
 
-Libraries
+This is Assignment 2 for Scientific Programing course of Systems Biology master in Maastricht University
+The goal of this assignment is to create a regression model to predict the  boiling point of differente kinds of alkanes based in other properties.
+
+The first step will be use different libraries to build this model. This will be useful to make a query about the alkanes with "wikidataQueryServiceR extract their features with rcdk, perform the regression model with "pls" and plot the results with "gplots".
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -18,39 +23,23 @@ library("rJava")
 library("rcdk")
 library("pls")
 ```
+ 
+ The next step is to make a query to obtain all the alkanes from wikidata with their boiling points and their smiles in order to be able to extract the features using rcdk package later.The important data extracted from wikidata will be names, boiling points, units of boiling points and smiles.
+ 
+```{r setup, include=FALSE}
 
-Query for the alkanes and their properties
-
-```{r}
-results_table<-results[,c(2,3,5,6)]
-
-#change everything to Kelvin
-
-results_kelvin<-results_table
-
-Celsius<-results_table[which(results_table$bpUnitLabel=='degree Celsius'),2]
-results_kelvin[which(results_table$bpUnitLabel=='degree Celsius'),2]<-Celsius+273.15
-
-Farent<-results_table[which(results_table$bpUnitLabel=='degree Fahrenheit'),2]
-results_kelvin[which(results_table$bpUnitLabel=='degree Fahrenheit'),2]<-(Farent ??? 32) * 5/9 + 273.15
+sparql_query <- 'SELECT ?comp ?compLabel ?bp ?bpUnit ?bpUnitLabel ?smiles WHERE {
+  ?comp wdt:P31/wdt:P279* wd:Q41581 ;
+p:P2102 [
+ps:P2102 ?bp ;
+psv:P2102/wikibase:quantityUnit  ?bpUnit
+];
+ wdt:P233 ?smiles.
+SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}'
+results = query_wikidata(sparql_query)
+list_alkanes            <-results[,c(2,3,5,6)]
+colnames(list_alkanes)  <- c('Names','Boiling points','Units','Smiles')
+print(head(list_alkanes))
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
