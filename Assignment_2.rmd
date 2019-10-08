@@ -63,7 +63,7 @@ list_alkanes$Unit <-'Kelvin'
 #parsing smiles
 parsed_smiles_alkanes<-parse.smiles(list_alkanes$Smile)
 #select a list of descriptors to build the model from rcdk
-descriptor_names   <-get.desc.names()[c(16,  8,  2, 28, 49, 37, 25, 33, 44, 22, 41,  3 )]
+descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
 #Find the descriptors values for each alkane and putting them in a variable called
 #"regression_data_alkanes"
 
@@ -97,6 +97,12 @@ pls <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```{r}
 RMSEP(pls)
 plot(RMSEP(pls), legendpos = "topright")
-plot(pls, ncomp = 2, asp = 1, line = TRUE)
+plot(pls, ncomp = 3, asp = 1, line = TRUE)
+```
+<!-- In this point with the model build is time to show the results for the test data -->
+```{r}
+pred<-predict(pls, ncomp = 4, newdata = test_set)
+x<-RMSEP(pls, newdata = test_set)
+print(x)
 ```
 
