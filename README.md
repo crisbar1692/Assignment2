@@ -1,48 +1,35 @@
-﻿
+﻿# **README-Assignment 2**
 
-# README-Assignment 2
+##**Scientific Programming-Systems Biology** 
+ 
+This Assignment is inspired in the previous work of Wiener et al. [1](https://pubs.acs.org/doi/abs/10.1021/ja01193a005) Where the boiling point of different alkanes was predicted based in other properties. In similar way, I developed a regression model to predict boiling points of multiple alkanes based on several chemical descriptors. This assignment is made in R studio with an interactive notebook using R Markdown integrating plots, code and comments.
 
-##Scientific Programming-Systems Biology
----
-This Assignment is the inspired in the previous work of Wiener et al. [1](https://pubs.acs.org/doi/abs/10.1021/ja01193a005) Where the boiling point of different alkanes was predicted based in other properties. In similar way, I developed a regression model to predict boiling points of multiple alkanes based in several chemical descriptors. 
+##**Autor**
 
-##Autor:
+ **Cristian Alberto Barrios Espinosa**, i6185546, is a second-year student of the master in Systems Biology at Maastricht University. 
+ 
+## **Used Packages**
 
-**Cristian Alberto Barrios Espinosa**, i6185546, is a second year student of the master in Systems Biology at Maastricht University.
+ Several packages were used to build this model [wikidataQueryServiceR](https://cran.r-project.org/web/packages/WikidataQueryServiceR/index.html) to make queries of the alkanes and their boiling points from wikidata. As well, [rcdk](https://cran.r-project.org/web/packages/rcdk/index.html) was used to extract descriptors for each one of the alkanes to be used as dependent variables. Finally, [pls](https://cran.r-project.org/web/packages/pls/vignettes/pls-manual.pdf) will provide the functions required to produce the regression model. 
+## **Query of Alkanes** 
+Alkanes were extracted from wikidata together with their boiling points and the latest group was transformed to Kelvin to unify the data and to be able to have a valid regression model. 
+## **Function to Calculate Root Mean Squared Error of Prediction (RMSEP)** 
+The RMSEP will be calculated several times based on different descriptors, training sets, and test sets. Consequently to make the code more friendly and clear this function was made. The output is always RMSEP for three components while the inputs are the boiling points, parsed smiles of the alkanes, the "descriptors indexes" a subset of all the numbers between 1 and 50 (the total number of descriptors), "training and test indexes" a subset of all the number between 1 and 142 (the total amount of alkanes analyzed). 
+## **Algorithm to select the best descriptors** 
 
-## Used Packages
-
-Several packages where used to build this model [wikidataQueryServiceR](https://cran.r-project.org/web/packages/WikidataQueryServiceR/index.html) to make queries of the alkanes and their boiling points from wikidata. As well, [rcdk](https://cran.r-project.org/web/packages/rcdk/index.html) was used to extract descriptors for each one of the alkanes to be used as dependend variables. Finally, [pls](https://cran.r-project.org/web/packages/pls/vignettes/pls-manual.pdf) will provide the functions required to produce the regression model.
-
-
-## Query of Alkanes
-
-Alkanes were extracted from wikidata together with their boiling points and the latest were transformed to Kelvin to unified the data and to be able to have a valid regression model. 
-
-## Function to Calculate Root Mean Squared Error of Prediction (RMSEP)
-
-The RMSEP will be calculated several times based in different descriptors, training sets and test sets. Consequently to make the code more friendly and clear this function was made. The output is always RMSEP for three components while the inputs are the boiling points, parsed smiles of the alkanes, the "descriptors indexes" a subset of all the numbers between 1 and 50 (the total number of descriptors), "training and test indexes" a subset of all the number between 1 and 142 (the total amount of alkanes analyzed).
-
-
-
-## Algorithm to select the best descriptors
-The algorithm designed for this task makes 50 iterations where in each one of them takes a random sample of depcriptors and calculate the average of the corresponding RMSEP for 4 test sets randomly selected in each iteration. After makind this calculations 50 times, the algorithm will give the smallest RMSEP together with the indexes of descriptors required to reproduce the results.
-
-______
->***Warning:* This algorithm may require several hours to run the 50 iterations. Nonetheless all the results from this process are already in the next parts of the code. Consequently, it is not necessary to run this algorithm in order to get results from the last part of the code.**
+The algorithm designed for this task makes 50 iterations wherein each one of them takes a random sample of descriptors and calculates the average of the corresponding RMSEP for 4 test sets randomly selected in each iteration. After making these calculations 50 times, the algorithm will give the smallest RMSEP together with the indexes of descriptors required to reproduce the results. 
+ >***Warning:* This algorithm may require several hours to run the 50 iterations. Nonetheless all the results from this process are already in the next parts of the code. Consequently, it is not necessary to run this algorithm in order to get results from the last part of the code.** 
+ 
+ 
+ ___________
+  
+##**Visualization** 
+After getting the descriptors for the best performance with three components, the scatter plot with predicted and measured boiling points will be shown. 
+## **License** 
+The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permissions for commercial use, distribution, modification, and private use. There are limitations regarding the liability and warranty. 
 
 
-
-_______
-##Visualization
-After getting the descriptors for the best performance with three components, the scatter plot with predicted and meassured boiling points will be shown.   
-
-
-
-## License
-The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permissions for commercial use, distribution, modification and private use. There is limitations regarding the liability and warranty.
-
-## Index of variables and functions
+## **Index of variables and functions**
 
 | Variable                | Description                                                                          |
 |-------------------------|--------------------------------------------------------------------------------------|
@@ -65,3 +52,12 @@ The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permi
 | RMSEP_test_3comp        | RMSEP fot the test set with 3 components                                             |
 | size_vector             | Amount of descriptors used in each iteration of the algorithm                        |
 | counter1/counter2       | Counters to run each on of the while loops                                           |                                   |
+
+##**References**
+
+1.	Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
+2.	Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
+3.	Wiener, H., Structural determination of paraffin boiling points. Journal of the American Chemical Society, 1947. 69(1): p. 17-20.
+4.	Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer.
+
+
