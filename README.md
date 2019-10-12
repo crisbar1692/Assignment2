@@ -3,6 +3,12 @@
 **Scientific Programming-Systems Biology** 
  
 This Assignment is inspired in the previous work of Wiener et al. [1](https://pubs.acs.org/doi/abs/10.1021/ja01193a005) Where the boiling point of different alkanes was predicted based in other properties. In similar way, I developed a regression model to predict boiling points of multiple alkanes based on several chemical descriptors. This assignment is made in R studio with an interactive notebook using R Markdown integrating plots, code and comments. The autor of this assignment is Cristian Alberto Barrios Espinosa, i6185546, is a second-year student of the master in Systems Biology at Maastricht University. 
+
+## **Content of Repository**
+- Assignment2.rmd (R Markdown file)
+- Autors
+- Readme.md
+- License
  
 ## **Used Packages**
 
