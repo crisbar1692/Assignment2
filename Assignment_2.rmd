@@ -29,7 +29,7 @@ library("pls")
 <!-- The next step is to make a query to obtain all the alkanes from wikidata with their boiling points and their smiles in order to be able to extract the features using rcdk package later. The important data extracted from wikidata will be names, boiling points, units of boiling points and smiles.  Additional commands are made in order to obtain the units and to show the results in English. It is seen in the data that not all the units are the same. Only the important columns are considered and the number of alkanes is obtained for future calculations. Some of them are in Celsius, Fahrenheit or Kelvin. In the output of this chunk of code is possible to see the first six elements of the results  -->
 
 ```{r}
-
+tic("time for the query")
 sparql_query <- 'SELECT ?comp ?compLabel ?bp ?bpUnit ?bpUnitLabel ?smiles WHERE {
   ?comp wdt:P31/wdt:P279* wd:Q41581 ;
 p:P2102 [
@@ -39,6 +39,7 @@ psv:P2102/wikibase:quantityUnit  ?bpUnit
  wdt:P233 ?smiles.
 SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }'
+toc()
 results_query = query_wikidata(sparql_query)
 list_alkanes  <-results_query[,c(2,3,5,6)]
 colnames(list_alkanes)  <- c('Name','Boiling_point','Unit','Smile')
@@ -63,6 +64,8 @@ print(summary(list_alkanes))
 <!-- Now to build the model, the smiles will be parsed to be used in the rdck package to extract the rest of the features that will be used in the regression model later on. As well, a list of descriptors that will be used in the model will be obtained with their values for each one of the alkanes. Obtaining adequate descriptors for the regression model is essential to have high accuracy. To perform the selection of the best possible descriptors an algorithm was created to randomly select a random number of descriptors over each iteration and assess the model finding the average RMSEP for 3 components obtained feeding the model with 4 combinations of train sets and test sets as well randomly selected. Over 50 iterations of this calculation the descriptors, with the smaller average of RMSEP for the 4 test sets, was selected -->
 
 <!-- The first part of this algorithm a function to define the RMSEP for 3 components taking as input the boiling points and the parsed smiles descriptors training and test vectors that contain indexes to select the respective variables and will be chosen randomly.  -->
+
+<!-- The reason why 3 components were selected was that it was observed for multiple selections of descriptors in the initial exploration of data most of the times good approximations are obtained after taking three components or four components in most of the cases. As 3 components are the minimum to save computational time and still be accurate, it  was the number of components selected to feed the algorithm. -->
 
 ```{r}
 
@@ -120,13 +123,14 @@ RMSEP_3comp_function <- function (descriptor_vector,parsed_smiles,boiling_points
 
 ```{r}
 
-
+tic("time running the algorithm")
 
 #counter 1 is a variable to run over the 50 iterations where 50 possible combinations of randomly
 #selected descriptors will be tested an the first assigned value is zero.
 counter1=0
 while (counter1<=50)
 {
+
 #star increment of the counter 1 to avoid infinite while loop
   counter1=counter1+1
   
@@ -148,6 +152,7 @@ counter2=1
 RMSEP_test_3comp<-0
 while (counter2<4)
 {
+  
   #counter 2 should increase to avoid infinite loops
   
   #print the counters to show the progress of the algorithm.
@@ -179,6 +184,7 @@ if (RMSEP_test_3comp<=ideal_RMSEP)
 }
 
 }
+toc()
 ```
 
 <!-- After finding the best combination of descriptors according to the algorithm to get the smallest RMSEP similar process will be repeated like inside the algorithm but with analysis of more details. Please note that the ideal combination of descriptors'indexes will be found in the variable ideal_vector. However as it is a random process and the algorithm can take several hours to run, for the rest of the code the ideal vector will be considered as c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4). Nonetheless, if the code is run again, the results will be likely different but sill with small RMSEP. -->
@@ -186,6 +192,7 @@ if (RMSEP_test_3comp<=ideal_RMSEP)
 
 ```{r}
 #select a list of descriptors to build the model from rcdk
+
 descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
 #Find the descriptors values for each alkane and putting them in a variable called
 #"regression_data_alkanes"
@@ -217,16 +224,16 @@ test_set<- regression_data_alkanes[115:nalkanes,]
 model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```
 
-<!-- Next, having the model is possible to make the first plots in order to undertand how the RMSEP decreases with the increase of components. -->
+<!-- Next, having the model is possible to make the first plots in order to undertand how the RMSEP decreases with the increase of components and that measured values and predicted values are close for the training dataset -->
 ```{r}
 RMSEP(model_alkanes)
 #Plot of RMSEP for each one of the number of components, it is possible to see how with 3 components the RMSEP reduced significatly.
 
-plot(RMSEP(model_alkanes),main="RMSEP vs Number of components",col.main="red")
+plot(RMSEP(model_alkanes),main="RMSEP vs Number of components",col.main="red",lwd=2)
 #Plot of predicted values vs measured
-plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling points",main="Prediction vs Plot Trainning set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red",line=T)
+plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling points",main="Prediction vs Plot Trainning set 3 components",lwd=1,asp=1,pch=21,col="blue", cex=1.5,cex.main=1.2,col.main="red",line=T)
 ```
-<!-- In this point with the model build is time to show the results for the test data -->
+<!-- With the model built is time to apply the model in the test set where first the RMSEP will be found, then the predicted values and the measured values for boiling points in the alkanes that belong to the test set will be selected. Finally a scatter plot comparing both vector will be shown-->
 ```{r}
 
 RMSEP_test<-RMSEP(model_alkanes, newdata = test_set)
@@ -250,3 +257,4 @@ abline(a=0,b=1,lwd=2)
 
 ```
 
+<!-- Finally, It was possible to make a very accurate model of the boiling points base in descriptors obtained from rcdk, that works for both training and test set -->
