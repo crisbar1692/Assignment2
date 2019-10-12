@@ -37,22 +37,23 @@ psv:P2102/wikibase:quantityUnit  ?bpUnit
  wdt:P233 ?smiles.
 SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }'
-results = query_wikidata(sparql_query)
-list_alkanes            <-results[,c(2,3,5,6)]
+results_query = query_wikidata(sparql_query)
+list_alkanes            <-query[,c(2,3,5,6)]
 colnames(list_alkanes)  <- c('Name','Boiling_point','Unit','Smile')
 print(head(list_alkanes))
+print(summary(list_alkanes))
 nalkanes<-nrow(list_alkanes)
 ```
 <!-- To make the units homogenous, the alkanes in which boiling points were found in Celsius or Fahrenheit will be changed to Kelvin. Otherwise the results of the model might be invalid. All the boiling points of alkanes in Celsius will be put in the vector called Celsius, after that the units will be changed into Kelvin in the list of alkanes. The same process will be repeated with alkanes in Fahrenheit. -->
 ``` {r}
 #Change of Celsius - Kelvin
 
-Celsius<-list_alkanes[which(list_alkanes$Unit=='degree Celsius'),2]
-list_alkanes[which(list_alkanes$Unit=='degree Celsius'),2]<-Celsius+273.15
+celsius<-list_alkanes[which(list_alkanes$Unit=='degree Celsius'),2]
+list_alkanes[which(list_alkanes$Unit=='degree Celsius'),2]<-celsius+273.15
 
 #Change of Fahrenheit - Kelvin
-Farent<-list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]
-list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]<-(Farent - 32) * 5/9 + 273.15
+fahrenh<-list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]
+list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]<-(fahrenh - 32) * 5/9 + 273.15
 
 list_alkanes$Unit <-'Kelvin'
 ```
@@ -135,7 +136,7 @@ size_vector=sample(c(3:50), size=1)
 descriptor_vector <- sample (c(1:50), size=size_vector)
 
 #Show the vector of indexes each time in the console to see which numbers are being tested each time
-print(descriptor_vector)
+
 #Second counter is introduced that will go from 0 to 5 and each time new training and test data sets 
 #will be randomly generated from the original data, in each time the length of the training set will
 #be the 80% of the alkanes found in the query and the test set will be the remaining 20%.
@@ -169,7 +170,9 @@ if (RMSEP_test_3comp<=ideal_RMSEP)
   {
   ideal_RMSEP  <- RMSEP_test_3comp
   ideal_vector <- descriptor_vector
+  #print the ideal vector and the RMSEP that it produces when a better result is achieved.
   print(RMSEP_test_3comp)
+  print(descriptor_vector)
 }
 
 }
@@ -207,14 +210,17 @@ colnames(regression_data_alkanes)[ncol(regression_data_alkanes)] <-'bp'
 train_set <-regression_data_alkanes[1:115,]
 #Defining test set as the last 28 alkanes of the list
 test_set<- regression_data_alkanes[116:143,]
-#defining the model using pls package
+#defining the model using pls package using the training set as input the validation is done with the technic Leave-one-Out.
 model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```
 
 <!-- Next, having the model is possible to make the first plots in order to undertand how the RMSEP decreases with the increase of components. -->
 ```{r}
 RMSEP(model_alkanes)
+#Plot of RMSEP for each one of the number of components, it is possible to see how with 3 components the RMSEP reduced significatly.
+
 plot(RMSEP(model_alkanes), legendpos = "topright")
+#Plot of predicted values vs measured
 plot(model_alkanes,ncomp=3,xlab="measured Boiled Points",ylab="Predicted Boiled Points", main="Prediction vs Plot Train set 3 components",line=TRUE,asp=1)
 ```
 <!-- In this point with the model build is time to show the results for the test data -->
