@@ -222,9 +222,9 @@ model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 RMSEP(model_alkanes)
 #Plot of RMSEP for each one of the number of components, it is possible to see how with 3 components the RMSEP reduced significatly.
 
-plot(RMSEP(model_alkanes), legendpos = "topright")
+plot(RMSEP(model_alkanes),main="RMSEP vs Number of components",col.main="red")
 #Plot of predicted values vs measured
-plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling boints", main="Prediction vs Plot Trainnig set and 3 components",line=TRUE,asp=1)
+plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling points",main="Prediction vs Plot Trainning set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red",line=T)
 ```
 <!-- In this point with the model build is time to show the results for the test data -->
 ```{r}
@@ -237,12 +237,16 @@ RMSEP_values<-RMSEP_test$val
 RMSEP_3comp<-RMSEP_values[1,1,4]
 print('RMSEP for 3 components in the test set is:')
 print(RMSEP_3comp)
+#predicted values using the test_set in the model obtained from the training set
 predicted_values <- as.matrix(predict(model_alkanes, ncomp = 3, newdata = test_set)[,1,1])
+#measured boiling points extracted previously from wikidata for the alkanes in the test set.
 measured_values <- as.matrix(boiling_points)[115:142]
-plot(predicted_values,measured_values,xlab="measured Boiled Points",ylab="Predicted Boiled Points", main="Prediction vs Plot Test set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red")
+
+#plot of predicted values vs measured values for the test set
+plot(predicted_values,measured_values,xlab="Measured boiling points",ylab="Predicted boiling points", main="Prediction vs Plot Test set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red")
 
 
-
+abline(a=0,b=1,lwd=2)
 
 ```
 
