@@ -3,28 +3,28 @@ title: "Assignment 2"
 output: html_document
 ---
 
-<!-- This is Assignment 2 for Scientific Programing course of Systems Biology master in Maastricht University -->
-<!-- The goal of this assignment is to create a regression model to predict the  boiling point of differente kinds of alkanes based in other properties. -->
-
-<!-- The first step will be use different libraries to build this model. This will be useful to make a query about the alkanes with "wikidataQueryServiceR extract their features with rcdk, perform the regression model with "pls" and plot the results with "gplots". -->
+<!-- This is Assignment 2 for Scientific Programming course of Systems Biology master at Maastricht University  -->
+<!-- The goal of this assignment is to create a regression model to predict the boiling point of different kinds of alkanes based on other properties.  -->
+<!-- The first step will be using different libraries to build this model. This will be useful to make a query about the alkanes with "wikidataQueryServiceR" extract their features with rcdk, perform the regression model with "pls" and plot the results with "gplots". -->
+<!-- The Wikidata Query Service R provides the opportunity to make queries via SPARQL in an R environment. Package "rcdk" allows usage of "CDK" for chemoinformatics which is a Java framework. Between many possibilities this tool facilitates the obtention of load molecules, molecular descriptors, 2d view structures, etc. "PLS" allows multivariable regression methods, Partial Least Squares Regression, Principal Component Regression, and Canonical Powered Partial Least Squares. -->
 
 
 ```{r}
 
 
-# install.packages("WikidataQueryServiceR")
-# install.packages("rJava")
-# install.packages("rcdk")
-# install.packages("pls")
-# install.packages("gplots")
-# 
-# library("WikidataQueryServiceR")
-# library("rJava")
-# library("rcdk")
-# library("pls")
+install.packages("WikidataQueryServiceR")
+install.packages("rJava")
+install.packages("rcdk")
+install.packages("pls")
+install.packages("gplots")
+
+library("WikidataQueryServiceR")
+library("rJava")
+library("rcdk")
+library("pls")
 ```
  
- <!-- The next step is to make a query to obtain all the alkanes from wikidata with their boiling points and their smiles in order to be able to extract the features using rcdk package later.The important data extracted from wikidata will be names, boiling points, units of boiling points and smiles. -->
+<!-- The next step is to make a query to obtain all the alkanes from wikidata with their boiling points and their smiles in order to be able to extract the features using rcdk package later. The important data extracted from wikidata will be names, boiling points, units of boiling points and smiles.  Additional commands are made in order to obtain the units and to show the results in English. It is seen in the data that not all the units are the same. Only the important columns are considered and the number of alkanes is obtained for future calculations. Some of them are in Celsius, Fahrenheit or Kelvin. In the output of this chunk of code is possible to see the first six elements of the results  -->
 
 ```{r}
 
@@ -41,9 +41,9 @@ results = query_wikidata(sparql_query)
 list_alkanes            <-results[,c(2,3,5,6)]
 colnames(list_alkanes)  <- c('Name','Boiling_point','Unit','Smile')
 print(head(list_alkanes))
+nalkanes<-nrow(list_alkanes)
 ```
-<!-- To make the units homogenous, the alkanes which boiling points were found in Celsius or Fahrenheit will be change to Kelvin. Otherwise the results of the model might be invalid. All the boiling points of alkanes in Celsius will be put in the vector called Celsius, after that the units will be change into Kelvin in the list of alkanes. Same process will be repeated with alkanes in Fahrenheit. -->
-
+<!-- To make the units homogenous, the alkanes in which boiling points were found in Celsius or Fahrenheit will be changed to Kelvin. Otherwise the results of the model might be invalid. All the boiling points of alkanes in Celsius will be put in the vector called Celsius, after that the units will be changed into Kelvin in the list of alkanes. The same process will be repeated with alkanes in Fahrenheit. -->
 ``` {r}
 #Change of Celsius - Kelvin
 
@@ -56,7 +56,7 @@ list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]<-(Farent - 32) * 5
 
 list_alkanes$Unit <-'Kelvin'
 ```
-<!-- Now  to build the model, the smiles will be parsed to be used in the rdck package to extract rest of the features that will be used in the regression model later on. As well, a list of descriptors that will be used in the model will be obtained with their values for each one of the alkanes. A final data frame with the values of each descriptor and the boiling points will be made to do the regression model. -->
+<!-- Now to build the model, the smiles will be parsed to be used in the rdck package to extract the rest of the features that will be used in the regression model later on. As well, a list of descriptors that will be used in the model will be obtained with their values for each one of the alkanes. Obtaining adequate descriptors for the regression model is essential to have high accuracy. To perform the selection of the best possible descriptors an algorithm was created to randomly select a random number of descriptors over each iteration and assess the model finding the average RMSEP for 3 components obtained feeding the model with 4 combinations of train sets and test sets as well randomly selected. Over 50 iterations of this calculation the descriptors, with the smaller average of RMSEP for the 4 test sets, was selected -->
 
 ```{r}
 
@@ -82,6 +82,7 @@ regression_data_alkanes <- as.data.frame(regression_data_alkanes)
 regression_data_alkanes <- cbind(regression_data_alkanes,list_alkanes$Boiling_point)
 #Naming the last column of boiling points as "bp"
 colnames(regression_data_alkanes)[ncol(regression_data_alkanes)] <-'bp'
+
 ```
 <!-- Now that the data frame with all the dependent and independent variables is ready, the regression model can be made based in this data. First a train and data set should be selected. -->
 ```{r}
@@ -90,19 +91,27 @@ train_set <-regression_data_alkanes[1:115,]
 #Defining test set as the last 28 alkanes of the list
 test_set<- regression_data_alkanes[116:143,]
 #defining the model using pls package
-pls <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
+model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```
 
 <!-- Next, having the model is possible to make the first plots in order to undertand how the RMSEP decreases with the increase of components. -->
 ```{r}
-RMSEP(pls)
-plot(RMSEP(pls), legendpos = "topright")
-plot(pls, ncomp = 3, asp = 1, line = TRUE)
+RMSEP(model_alkanes)
+plot(RMSEP(model_alkanes), legendpos = "topright")
+plot(model_alkanes, ncomp = 3, asp = 1, line = TRUE)
 ```
 <!-- In this point with the model build is time to show the results for the test data -->
 ```{r}
-pred<-predict(pls, ncomp = 4, newdata = test_set)
-x<-RMSEP(pls, newdata = test_set)
-print(x)
+pred<-predict(model_alkanes, ncomp = 4, newdata = test_set)
+RMSEP_test<-RMSEP(model_alkanes, newdata = test_set)
+
+#make a vector only with the values of the RMSEP for each component
+RMSEP_values<-RMSEP_test$val
+#Find the value of RMSEP with 3 components, it is the 4th element because the first is the intercept.
+RMSEP_3comp<-RMSEP_values[1,1,4]
+print('RMSEP for 3 components in the test set is:')
+print(RMSEP_3comp)
+predplot(model_alkanes,ncomp=3,which = "test",newdata=test_set,xlab="measured Boiled Points",ylab="Predicted Boiled Points", main="Prediction vs Plot Test set 3 components")
+
 ```
 
