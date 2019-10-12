@@ -1,6 +1,8 @@
 ---
 title: "Assignment 2"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 <!-- This is Assignment 2 for Scientific Programming course of Systems Biology master at Maastricht University  -->
@@ -38,10 +40,10 @@ psv:P2102/wikibase:quantityUnit  ?bpUnit
 SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }'
 results_query = query_wikidata(sparql_query)
-list_alkanes            <-query[,c(2,3,5,6)]
+list_alkanes  <-results_query[,c(2,3,5,6)]
 colnames(list_alkanes)  <- c('Name','Boiling_point','Unit','Smile')
 print(head(list_alkanes))
-print(summary(list_alkanes))
+
 nalkanes<-nrow(list_alkanes)
 ```
 <!-- To make the units homogenous, the alkanes in which boiling points were found in Celsius or Fahrenheit will be changed to Kelvin. Otherwise the results of the model might be invalid. All the boiling points of alkanes in Celsius will be put in the vector called Celsius, after that the units will be changed into Kelvin in the list of alkanes. The same process will be repeated with alkanes in Fahrenheit. -->
@@ -56,6 +58,7 @@ fahrenh<-list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]
 list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]<-(fahrenh - 32) * 5/9 + 273.15
 
 list_alkanes$Unit <-'Kelvin'
+print(summary(list_alkanes))
 ```
 <!-- Now to build the model, the smiles will be parsed to be used in the rdck package to extract the rest of the features that will be used in the regression model later on. As well, a list of descriptors that will be used in the model will be obtained with their values for each one of the alkanes. Obtaining adequate descriptors for the regression model is essential to have high accuracy. To perform the selection of the best possible descriptors an algorithm was created to randomly select a random number of descriptors over each iteration and assess the model finding the average RMSEP for 3 components obtained feeding the model with 4 combinations of train sets and test sets as well randomly selected. Over 50 iterations of this calculation the descriptors, with the smaller average of RMSEP for the 4 test sets, was selected -->
 
@@ -132,7 +135,7 @@ while (counter1<=50)
 #will be used in the model each time.  
 size_vector=sample(c(3:50), size=1)
 
-#Making a random selection of descriptor to find the best prediction
+#Making a random selection of descriptor to find the best prediction chosing as many descriptor as the number in size_vector
 descriptor_vector <- sample (c(1:50), size=size_vector)
 
 #Show the vector of indexes each time in the console to see which numbers are being tested each time
@@ -207,9 +210,9 @@ colnames(regression_data_alkanes)[ncol(regression_data_alkanes)] <-'bp'
 <!-- Now that the data frame with all the dependent and independent variables is ready, the regression model can be made based on this data. First, a train and data set should be selected. -->>
 ```{r}
 #Defining train set as the first 115 alkanes of the list
-train_set <-regression_data_alkanes[1:115,]
+train_set <-regression_data_alkanes[1:114,]
 #Defining test set as the last 28 alkanes of the list
-test_set<- regression_data_alkanes[116:143,]
+test_set<- regression_data_alkanes[115:nalkanes,]
 #defining the model using pls package using the training set as input the validation is done with the technic Leave-one-Out.
 model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```
@@ -221,11 +224,11 @@ RMSEP(model_alkanes)
 
 plot(RMSEP(model_alkanes), legendpos = "topright")
 #Plot of predicted values vs measured
-plot(model_alkanes,ncomp=3,xlab="measured Boiled Points",ylab="Predicted Boiled Points", main="Prediction vs Plot Train set 3 components",line=TRUE,asp=1)
+plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling boints", main="Prediction vs Plot Trainnig set and 3 components",line=TRUE,asp=1)
 ```
 <!-- In this point with the model build is time to show the results for the test data -->
 ```{r}
-pred<-predict(model_alkanes, ncomp = 4, newdata = test_set)
+
 RMSEP_test<-RMSEP(model_alkanes, newdata = test_set)
 
 #make a vector only with the values of the RMSEP for each component
@@ -234,7 +237,12 @@ RMSEP_values<-RMSEP_test$val
 RMSEP_3comp<-RMSEP_values[1,1,4]
 print('RMSEP for 3 components in the test set is:')
 print(RMSEP_3comp)
-predplot(model_alkanes,ncomp=3,which = "test",newdata=test_set,xlab="measured Boiled Points",ylab="Predicted Boiled Points", main="Prediction vs Plot Test set 3 components",line=TRUE,asp=1)
+predicted_values <- as.matrix(predict(model_alkanes, ncomp = 3, newdata = test_set)[,1,1])
+measured_values <- as.matrix(boiling_points)[115:142]
+plot(predicted_values,measured_values,xlab="measured Boiled Points",ylab="Predicted Boiled Points", main="Prediction vs Plot Test set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red")
+
+
+
 
 ```
 
