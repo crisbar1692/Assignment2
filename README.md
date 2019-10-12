@@ -12,7 +12,7 @@ This Assignment is inspired in the previous work of Wiener et al. [1](https://pu
  
 ## **Used Packages**
 
- Several packages were used to build this model [wikidataQueryServiceR](https://cran.r-project.org/web/packages/WikidataQueryServiceR/index.html) to make queries of the alkanes and their boiling points from wikidata. As well, [rcdk](https://cran.r-project.org/web/packages/rcdk/index.html) was used to extract descriptors for each one of the alkanes to be used as dependent variables. Finally, [pls](https://cran.r-project.org/web/packages/pls/vignettes/pls-manual.pdf) will provide the functions required to produce the regression model. 
+ Several packages were used to build this model [wikidataQueryServiceR 2](https://cran.r-project.org/web/packages/WikidataQueryServiceR/index.html) to make queries of the alkanes and their boiling points from wikidata. As well, [rcdk 3](https://cran.r-project.org/web/packages/rcdk/index.html) was used to extract descriptors for each one of the alkanes to be used as dependent variables. Finally, [pls 4](https://cran.r-project.org/web/packages/pls/vignettes/pls-manual.pdf) will provide the functions required to produce the regression model. 
 ## **Query of Alkanes** 
 Alkanes were extracted from wikidata together with their boiling points and the latest group was transformed to Kelvin to unify the data and to be able to have a valid regression model. 
 ## **Function to Calculate Root Mean Squared Error of Prediction (RMSEP)** 
@@ -56,9 +56,11 @@ The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permi
 
 ## **References**
 
-1.	Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
-2.	Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
-3.	Wiener, H., Structural determination of paraffin boiling points. Journal of the American Chemical Society, 1947. 69(1): p. 17-20.
-4.	Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer.
+
+
+1.	Wiener, H., Structural determination of paraffin boiling points. Journal of the American Chemical Society, 1947. 69(1): p. 17-20.
+2.	Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer.
+3.	Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
+4.	Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
 
 
