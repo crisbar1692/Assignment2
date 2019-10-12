@@ -17,9 +17,8 @@ The algorithm designed for this task makes 50 iterations wherein each one of the
  >***Warning:* This algorithm may require several hours to run the 50 iterations. Nonetheless all the results from this process are already in the next parts of the code. Consequently, it is not necessary to run this algorithm in order to get results from the last part of the code.** 
  
  
- ___________
-  
-##**Visualization** 
+
+## **Visualization**
 After getting the descriptors for the best performance with three components, the scatter plot with predicted and measured boiling points will be shown. 
 ## **License** 
 The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permissions for commercial use, distribution, modification, and private use. There are limitations regarding the liability and warranty. 
