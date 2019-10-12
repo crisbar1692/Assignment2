@@ -1,5 +1,8 @@
 ---
 title: "Assignment 2"
+author: "Cristian Alberto Barrios Espinosa"
+date: "14-10-2019"
+
 output:
   html_document: default
 ---
@@ -7,13 +10,26 @@ This is Assignment 2 for Scientific Programming course of Systems Biology master
 The goal of this assignment is to create a regression model to predict the boiling point of different kinds of alkanes based on other properties.
 The first step will be using different libraries to build this model. This will be useful to make a query about the alkanes with "wikidataQueryServiceR" extract their features with rcdk, perform the regression model with "pls" and plot the results with "gplots".
 The Wikidata Query Service R provides the opportunity to make queries via SPARQL in an R environment. Package "rcdk" allows usage of "CDK" for chemoinformatics which is a Java framework. Between many possibilities this tool facilitates the obtention of load molecules, molecular descriptors, 2d view structures, etc. "PLS" allows multivariable regression methods, Partial Least Squares Regression, Principal Component Regression, and Canonical Powered Partial Least Squares.
-```{r}
-# install.packages("WikidataQueryServiceR")
-# install.packages("rJava")
-# install.packages("rcdk")
-# install.packages("pls")
-# install.packages("gplots")
-# install.packages("tictoc")
+```{r setup, include=FALSE}
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE)
+
+if (!requireNamespace("WikidataQueryServiceR", quietly = TRUE))
+    install.packages("WikidataQueryServiceR")
+if (!requireNamespace("rJava", quietly = TRUE))
+    install.packages("rJava")
+if (!requireNamespace("rcdk", quietly = TRUE))
+    install.packages("rcdk")
+if (!requireNamespace("pls", quietly = TRUE))
+    install.packages("pls")
+if (!requireNamespace("gplots", quietly = TRUE))
+    install.packages("gplots")
+if (!requireNamespace("tictoc", quietly = TRUE))
+    install.packages("tictoc")
+
+
+
+
 library("tictoc")
 library("WikidataQueryServiceR")
 library("rJava")
@@ -35,11 +51,11 @@ psv:P2102/wikibase:quantityUnit  ?bpUnit
 SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }'
 toc()
-results_query = query_wikidata(sparql_query)
+results_query <- query_wikidata(sparql_query)
 list_alkanes  <-results_query[,c(2,3,5,6)]
 colnames(list_alkanes)  <- c('Name','Boiling_point','Unit','Smile')
-print(head(list_alkanes))
-
+print(head(list_alkanes[,-4]))#First six alkanes and boiling points
+print(head(list_alkanes[,c(1,4)]))#First six alkanes and smiles
 nalkanes<-nrow(list_alkanes)
 ```
 To make the units homogenous, the alkanes in which boiling points were found in Celsius or Fahrenheit will be changed to Kelvin. Otherwise the results of the model might be invalid. All the boiling points of alkanes in Celsius will be put in the vector called Celsius, after that the units will be changed into Kelvin in the list of alkanes. The same process will be repeated with alkanes in Fahrenheit.
@@ -54,7 +70,9 @@ fahrenh<-list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]
 list_alkanes[which(list_alkanes$Unit=='degree Fahrenheit'),2]<-(fahrenh - 32) * 5/9 + 273.15
 
 list_alkanes$Unit <-'Kelvin'
+#Exploration of the boiling points dataset
 print(summary(list_alkanes))
+
 ```
 Now to build the model, the smiles will be parsed to be used in the rdck package to extract the rest of the features that will be used in the regression model later on. As well, a list of descriptors that will be used in the model will be obtained with their values for each one of the alkanes. Obtaining adequate descriptors for the regression model is essential to have high accuracy. To perform the selection of the best possible descriptors an algorithm was created to randomly select a random number of descriptors over each iteration and assess the model finding the average RMSEP for 3 components obtained feeding the model with 4 combinations of train sets and test sets as well randomly selected. Over 50 iterations of this calculation the descriptors, with the smaller average of RMSEP for the 4 test sets, was selected
 
@@ -173,9 +191,11 @@ if (RMSEP_test_3comp<=ideal_RMSEP)
   {
   ideal_RMSEP  <- RMSEP_test_3comp
   ideal_vector <- descriptor_vector
-  #print the ideal vector and the RMSEP that it produces when a better result is achieved.
-  print(RMSEP_test_3comp)
-  print(descriptor_vector)
+  #print the ideal vector and the RMSEP that it produces when a better result is achieved
+  
+  #uncomment this lines to see the progress
+  # print(RMSEP_test_3comp)
+  # print(descriptor_vector)
 }
 
 }
@@ -210,6 +230,7 @@ colnames(regression_data_alkanes)[ncol(regression_data_alkanes)] <-'bp'
 
 ```
 Now that the data frame with all the dependent and independent variables is ready, the regression model can be made based on this data. First, a train and data set should be selected.
+The kind of model used is Partial least squares regression. It find a linear regression model by projecting the independent and dependend variables into an additional space. It is particulary suitable for cases like this where the amount of observable variables is big.
 ```{r}
 #Defining train set as the first 115 alkanes of the list
 train_set <-regression_data_alkanes[1:114,]
@@ -226,7 +247,7 @@ RMSEP(model_alkanes)
 
 plot(RMSEP(model_alkanes),main="RMSEP vs Number of components",col.main="red",lwd=2)
 #Plot of predicted values vs measured
-plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling points",main="Prediction vs Plot Trainning set 3 components",lwd=1,asp=1,pch=21,col="blue", cex=1.5,cex.main=1.2,col.main="red",line=T)
+plot(model_alkanes,ncomp=3,xlab="Measured boiling points",ylab="Predicted boiling points",main="Prediction vs Plot Trainning set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red",line=T)
 ```
 Now with the model built is time to apply the model in the test set where first the RMSEP will be found, then the predicted values and the measured values for boiling points in the alkanes that belong to the test set will be selected. Finally a scatter plot comparing both vector will be shown
 ```{r}
@@ -247,7 +268,7 @@ measured_values <- as.matrix(boiling_points)[115:142]
 #plot of predicted values vs measured values for the test set
 plot(predicted_values,measured_values,xlab="Measured boiling points",ylab="Predicted boiling points", main="Prediction vs Plot Test set 3 components",lwd=1,asp=1,pch=16,col="blue", cex=1.5,cex.main=1.2,col.main="red")
 
-
+#Add the diagonal line.
 abline(a=0,b=1,lwd=2)
 
 ```
