@@ -1,12 +1,8 @@
 ﻿# **README-Assignment 2**
 
-##**Scientific Programming-Systems Biology** 
+**Scientific Programming-Systems Biology** 
  
-This Assignment is inspired in the previous work of Wiener et al. [1](https://pubs.acs.org/doi/abs/10.1021/ja01193a005) Where the boiling point of different alkanes was predicted based in other properties. In similar way, I developed a regression model to predict boiling points of multiple alkanes based on several chemical descriptors. This assignment is made in R studio with an interactive notebook using R Markdown integrating plots, code and comments.
-
-##**Autor**
-
- **Cristian Alberto Barrios Espinosa**, i6185546, is a second-year student of the master in Systems Biology at Maastricht University. 
+This Assignment is inspired in the previous work of Wiener et al. [1](https://pubs.acs.org/doi/abs/10.1021/ja01193a005) Where the boiling point of different alkanes was predicted based in other properties. In similar way, I developed a regression model to predict boiling points of multiple alkanes based on several chemical descriptors. This assignment is made in R studio with an interactive notebook using R Markdown integrating plots, code and comments. The autor of this assignment is Cristian Alberto Barrios Espinosa, i6185546, is a second-year student of the master in Systems Biology at Maastricht University. 
  
 ## **Used Packages**
 
@@ -21,9 +17,8 @@ The algorithm designed for this task makes 50 iterations wherein each one of the
  >***Warning:* This algorithm may require several hours to run the 50 iterations. Nonetheless all the results from this process are already in the next parts of the code. Consequently, it is not necessary to run this algorithm in order to get results from the last part of the code.** 
  
  
- ___________
-  
-##**Visualization** 
+
+## **Visualization**
 After getting the descriptors for the best performance with three components, the scatter plot with predicted and measured boiling points will be shown. 
 ## **License** 
 The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permissions for commercial use, distribution, modification, and private use. There are limitations regarding the liability and warranty. 
@@ -53,7 +48,7 @@ The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permi
 | size_vector             | Amount of descriptors used in each iteration of the algorithm                        |
 | counter1/counter2       | Counters to run each on of the while loops                                           |                                   |
 
-##**References**
+## **References**
 
 1.	Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
 2.	Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
