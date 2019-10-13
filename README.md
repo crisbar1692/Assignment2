@@ -94,6 +94,8 @@ The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permi
 | counter1/counter2       | Counters to run each on of the while loops                                           |      
 | predicted_values        | Boiling points predicted using the obstained model                                   |
 | measured_values         | Measured Boiling points obtained from wikidata                                       |
+| error_vector            | distance between the points of the predicted vs measured plot and the diagonal       |
+| outliers                | outliers calculated over the error_vector using Rosner Test                          |
 
 
 ## **References**
