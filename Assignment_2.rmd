@@ -230,9 +230,15 @@ The kind of model used is Partial least squares regression. It finds a linear re
 train_set <-regression_data_alkanes[1:114,]
 row.names(train_set)<-c(1:114)
 
+#Reporting size of train set
+print(length(train_set))
+
 #Defining test set as the last 29 alkanes of the list
 test_set<- regression_data_alkanes[115:nalkanes,]
 row.names(test_set)<-c(1:nrow(test_set))
+
+#Reporting size of test set
+print(length(test_set))
 
 #Defining the model using pls package using the training set as input the validation is done with the technic Leave-one-Out.
 model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
