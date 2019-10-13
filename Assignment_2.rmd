@@ -195,6 +195,9 @@ while (counter1<=5)
   }
   
 }
+#Print output of the algorithm
+print(ideal_vector)
+print(ideal_RMSEP)
 toc()
 ```
 
