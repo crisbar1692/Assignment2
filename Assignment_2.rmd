@@ -2,8 +2,8 @@
 title: "Assignment 2"
 author: "Cristian Alberto Barrios Espinosa"
 date: "14-10-2019"
-
 output:
+  pdf_document: default
   html_document: default
 ---
 This is Assignment 2 for Scientific Programming course of Systems Biology master at Maastricht University
@@ -267,8 +267,6 @@ error_vector<-sqrt((measured_values-((measured_values+predicted_values)/2))^2+(p
 #Apply RosnerTest to find outliers
 outliers<-rosnerTest(error_vector)
 
-#Print rosner test calculation results
-print(ourliers)
 
 #Extract outliers index from the output
 outliers<-outliers$all.stats$Obs.Num
@@ -320,8 +318,6 @@ error_vector<-sqrt((measured_values-((measured_values+predicted_values)/2))^2+(p
 #Apply RosnerTest to find outliers
 outliers<-rosnerTest(error_vector)
 
-#Print rosner test calculation results
-print(ourliers)
 
 #Extract outliers index from the output
 outliers<-outliers$all.stats$Obs.Num
