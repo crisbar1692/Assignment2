@@ -201,13 +201,13 @@ print(ideal_RMSEP)
 toc()
 ```
 
-After finding the best combination of descriptors according to the algorithm to get the smallest RMSEP similar process will be repeated like inside the algorithm but including corresponding analysis and plots. Please note that the ideal combination of descriptors indexes will be found in the variable ideal_vector. However as it is a random process and the algorithm can take several hours to run, for the rest of the code the ideal vector will be considered as c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4). Nonetheless, if the code is run again, the results will be likely different but sill with small RMSEP.
+After finding the best combination of descriptors according to the algorithm to get the smallest RMSEP similar process will be repeated like inside the algorithm but including corresponding analysis and plots. Please note that the ideal combination of descriptors indexes will be found in the variable ideal_vector. However as it is a random process and the algorithm can take several hours to run, for the rest of the code the ideal vector can be considered as c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4) the vector obtained in one of the simulations. Nonetheless, if the code is run again, the results will be likely different but sill with small RMSEP.
 
 
 ```{r}
 #Select a list of descriptors to build the model from rcdk
-descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
-
+# descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
+descriptor_names   <-get.desc.names()[(ideal_vector)]
 # #Print descriptor names
 print(descriptor_names)
 
