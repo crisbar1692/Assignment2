@@ -12,12 +12,43 @@ This Assignment is inspired in the previous work of Wiener et al. [1](https://pu
  
 ## **Used Packages**
 
- Several packages were used to build this model [wikidataQueryServiceR 2](https://cran.r-project.org/web/packages/WikidataQueryServiceR/index.html) to make queries of the alkanes and their boiling points from wikidata. As well, [rcdk 3](https://cran.r-project.org/web/packages/rcdk/index.html) was used to extract descriptors for each one of the alkanes to be used as dependent variables. Finally, [pls 4](https://cran.r-project.org/web/packages/pls/vignettes/pls-manual.pdf) will provide the functions required to produce the regression model. 
+ Several packages were used to build this model [wikidataQueryServiceR 2](https://cran.r-project.org/web/packages/WikidataQueryServiceR/index.html) to make queries of the alkanes and their boiling points from wikidata. As well, [rcdk 3](https://cran.r-project.org/web/packages/rcdk/index.html) was used to extract descriptors for each one of the alkanes to be used as dependent variables. Finally, [pls 4](https://cran.r-project.org/web/packages/pls/vignettes/pls-manual.pdf) will provide the functions required to produce the regression model. [tictoc 4](https://cran.r-project.org/web/packages/tictoc/index.html) is a package to count the time of running code in different sessions that demmand longer time. [EnvStats 5](https://cran.r-project.org/web/packages/EnvStats/index.html) has the rosner test useful to find outliers.
+ 
+  To run the code make sure that you run these lines in the console:
+ 
+ ```R
+if (!requireNamespace("WikidataQueryServiceR", quietly = TRUE))
+    install.packages("WikidataQueryServiceR")
+if (!requireNamespace("rJava", quietly = TRUE))
+    install.packages("rJava")
+if (!requireNamespace("rcdk", quietly = TRUE))
+    install.packages("rcdk")
+if (!requireNamespace("pls", quietly = TRUE))
+    install.packages("pls")
+if (!requireNamespace("gplots", quietly = TRUE))
+    install.packages("gplots")
+if (!requireNamespace("tictoc", quietly = TRUE))
+    install.packages("tictoc")
+if (!requireNamespace("EnvStats", quietly = TRUE))
+    install.packages("EnvStats")
+
+library("EnvStats")
+library("tictoc")
+library("WikidataQueryServiceR")
+library("rJava")
+library("rcdk")
+library("pls")
+
+```
 ## **Query of Alkanes** 
 Alkanes were extracted from wikidata together with their boiling points and the latest group was transformed to Kelvin to unify the data and to be able to have a valid regression model. 
 
 ## **Partial least squares regression model** 
 The kind of model used is Partial least squares regression. It find a linear regression model by projecting the independent and dependend variables into an additional space. It is particulary suitable for cases like this where the amount of observable variables is big.
+
+>**The underlyng equations of the model are these::**
+$X=TP^{T}+E$
+$Y=UQ^{T}+F$
 
 ## **Function to Calculate Root Mean Squared Error of Prediction (RMSEP)** 
 The RMSEP will be calculated several times based on different descriptors, training sets, and test sets. Consequently to make the code more friendly and clear this function was made. The output is always RMSEP for three components while the inputs are the boiling points, parsed smiles of the alkanes, the "descriptors indexes" a subset of all the numbers between 1 and 50 (the total number of descriptors), "training and test indexes" a subset of all the number between 1 and 142 (the total amount of alkanes analyzed). 
@@ -30,6 +61,10 @@ The algorithm designed for this task makes 50 iterations wherein each one of the
 
 ## **Visualization**
 After getting the descriptors for the best performance with three components, the scatter plot with predicted and measured boiling points will be shown. 
+
+## Other models
+In other models as mentioned in Lie et all [7](https://pubs.acs.org/doi/abs/10.1021/ci970109z), better predictions have been achieved using similar methods of linear regression, with RMS of less than 5K. Consequently, the current model can still be improved using better algorithms to find the correct descriptors.
+
 ## **License** 
 The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permissions for commercial use, distribution, modification, and private use. There are limitations regarding the liability and warranty. 
 
@@ -69,5 +104,8 @@ The license used is [MIT](https://choosealicense.com/licenses/mit/) it has permi
 2.	Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer.
 3.	Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
 4.	Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
+5.	Izrailev, S., tictoc: Functions for Timing R Scripts. R package version 1.0. URL: https://CRAN. R-project. org/package= tictoc, 2014.
+6.	Millard, S.P., M.A. Kowarik, and M. Imports, Package ‘EnvStats’. Package for environmental statistics. version, 2018. 2(1).
+7.	Liu, S., C. Cao, and Z. Li, Approach to estimation and prediction for normal boiling point (NBP) of alkanes based on a novel molecular distance-edge (MDE) vector, λ. Journal of chemical information and computer sciences, 1998. 38(3): p. 387-394.
 
 
