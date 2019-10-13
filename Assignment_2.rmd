@@ -247,7 +247,7 @@ print(length(test_set))
 model_alkanes <- plsr(bp ~ ., ncomp = 4, data = train_set, validation = "LOO")
 ```
 
-Next, It is possible to make the first plots in order to undertand how the RMSEP decreases with the increase of components and that measured values and predicted values are close for the training dataset
+Next, It is possible to make the first plots in order to undertand how the RMSEP decreases with the increase of components and that measured values and predicted values are close for the training dataset. AS well outliers will be calculated using Rosner test, generalized extreme Studentized deviate test in our case assuming 0 potential outliers in the trainning and test dataset, assuming the data without any outliers come from a normal (Gaussian) distribution
 ```{r}
 #Plot of RMSEP for each one of the number of components, it is possible to see how with 3 components the RMSEP reduced significatly.
 plot(RMSEP(model_alkanes),main="RMSEP vs Number of components (LV plot)",col.main="red",lwd=2)
@@ -256,7 +256,7 @@ plot(RMSEP(model_alkanes),main="RMSEP vs Number of components (LV plot)",col.mai
 #Print the RMSEP
 RMSEP(model_alkanes)
 
-
+#Extracting two vectors with predicted and measured values from the model and wikidata query to make the plot.
 predicted_values <- as.matrix(predict(model_alkanes, ncomp = 3, newdata = train_set)[,1,1])
 measured_values <- as.matrix(boiling_points)[1:114]
 
@@ -266,6 +266,9 @@ error_vector<-sqrt((measured_values-((measured_values+predicted_values)/2))^2+(p
 
 #Apply RosnerTest to find outliers
 outliers<-rosnerTest(error_vector)
+
+#Print rosner test calculation results
+print(ourliers)
 
 #Extract outliers index from the output
 outliers<-outliers$all.stats$Obs.Num
@@ -316,6 +319,9 @@ error_vector<-sqrt((measured_values-((measured_values+predicted_values)/2))^2+(p
 
 #Apply RosnerTest to find outliers
 outliers<-rosnerTest(error_vector)
+
+#Print rosner test calculation results
+print(ourliers)
 
 #Extract outliers index from the output
 outliers<-outliers$all.stats$Obs.Num
