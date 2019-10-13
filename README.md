@@ -46,7 +46,7 @@ Alkanes were extracted from wikidata together with their boiling points and the 
 ## **Partial least squares regression model** 
 The kind of model used is Partial least squares regression. It find a linear regression model by projecting the independent and dependend variables into an additional space. It is particulary suitable for cases like this where the amount of observable variables is big.
 
->**The underlyng equations of the model are these::**
+
 $$X=TP^{T}+E$$
 $$Y=UQ^{T}+F$$
 
