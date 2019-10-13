@@ -338,3 +338,14 @@ print(list_alkanes[outliers+114,1])
 ```
 In the previous plot in blue, it is displayed all the dataset, the outliers are highlighted in red.
 Finally, It was possible to make a very accurate model of the boiling points base in descriptors obtained from rcdk, that works for both training and test set.
+In other models as mentioned in Lie et all 7, better predictions have been achieved using similar methods of linear regression, with RMS of less than 5K. Consequently, the current model can still be improved using better algorithms to find the correct descriptors.
+
+#References
+
+1. Wiener, H., Structural determination of paraffin boiling points. Journal of the American Chemical Society, 1947. 69(1): p. 17-20.
+2. Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer.
+3. Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
+4. Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
+5. Izrailev, S., tictoc: Functions for Timing R Scripts. R package version 1.0. URL: https://CRAN. R-project. org/package= tictoc, 2014.
+6. Millard, S.P., M.A. Kowarik, and M. Imports, Package 'EnvStats'. Package for environmental statistics. version, 2018. 2(1).
+7. Liu, S., C. Cao, and Z. Li, Approach to estimation and prediction for normal boiling point (NBP) of alkanes based on a novel molecular distance-edge (MDE) vector, ??. Journal of chemical information and computer sciences, 1998. 38(3): p. 387-394
