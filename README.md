@@ -47,8 +47,8 @@ Alkanes were extracted from wikidata together with their boiling points and the 
 The kind of model used is Partial least squares regression. It find a linear regression model by projecting the independent and dependend variables into an additional space. It is particulary suitable for cases like this where the amount of observable variables is big.
 
 >**The underlyng equations of the model are these::**
-$X=TP^{T}+E$
-$Y=UQ^{T}+F$
+$$X=TP^{T}+E$$
+$$Y=UQ^{T}+F$$
 
 ## **Function to Calculate Root Mean Squared Error of Prediction (RMSEP)** 
 The RMSEP will be calculated several times based on different descriptors, training sets, and test sets. Consequently to make the code more friendly and clear this function was made. The output is always RMSEP for three components while the inputs are the boiling points, parsed smiles of the alkanes, the "descriptors indexes" a subset of all the numbers between 1 and 50 (the total number of descriptors), "training and test indexes" a subset of all the number between 1 and 142 (the total amount of alkanes analyzed). 
