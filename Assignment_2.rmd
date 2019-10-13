@@ -3,14 +3,14 @@ title: "Assignment 2"
 author: "Cristian Alberto Barrios Espinosa"
 date: "14-10-2019"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 This is Assignment 2 for Scientific Programming course of Systems Biology master at Maastricht University
 The goal of this assignment is to create a regression model to predict the boiling point of different kinds of alkanes based on other properties.
 The first step will be using different libraries to build this model. This will be useful to make a query about the alkanes with "wikidataQueryServiceR" extract their features with rcdk, perform the regression model with "pls" and plot the results with "gplots". The version of R will be R version 3.5.2 (2018-12-20).
 The Wikidata Query Service R provides the opportunity to make queries via SPARQL in an R environment. Package "rcdk" allows usage of "CDK" for chemoinformatics which is a Java framework. Between many possibilities this tool facilitates the obtention of load molecules, molecular descriptors, 2d view structures, etc. "PLS" allows multivariable regression methods, Partial Least Squares Regression, Principal Component Regression, and Canonical Powered Partial Least Squares.tictoc is a package to count the time of running code in different sessions that demmand longer time. EnvStats has the rosner test useful to find outliers.
-```{r setup, include=TRUE}
+```{r setup, include=F}
 chooseCRANmirror(graphics=FALSE, ind=1)
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -149,51 +149,51 @@ while (counter1<=5)
 {
   # Increment of the counter 1 to avoid infinite while loop
   counter1=counter1+1
-  
-  #size_vector will be a number between 3 and 50 and represents the amount of descriptors that will be used in the model during each iteration.  
+
+  #size_vector will be a number between 3 and 50 and represents the amount of descriptors that will be used in the model during each iteration.
   size_vector=sample(c(3:50), size=1)
-  
+
   #Making a random selection of descriptors to find the best prediction chosing as many descriptor as the number in size_vector
   descriptor_vector <- sample (c(1:50), size=size_vector)
-  
+
   #Second counter is introduced that will go from 1 to 4. In each iteration of counter 2, a new training and test data sets will be randomly generated from the original data. The training set will always be the 80% of the alkanes found in the query and the test set will be the remaining 20%.
   counter2<-1
-  
+
   #The average of RMSEP for all the iterations of the counter 2 will be calculated. For these reason is initialize as zero.
     RMSEP_test_3comp<-0
-  
+
     while (counter2<4)
   {
     #Uncomment next line to see the progress of the algorithm,
     #print(c(counter1,counter2))
-    
+
     #Select the train vector of indexes as a random 80% elements of the list of number of alkanes
     train_vector<-sample(c(1:nalkanes),floor(nalkanes*0.80))
-    
+
     #Select the test vector of indexes as the remaining 20% elements of the list of number of alkanes
     test_vector<-setdiff(c(1:nalkanes),train_vector)
-    
+
     #Use the previously defined function to calculate the RMSEP for each descriptor vector and each training/test data sets for three components and add this value to the sum of RMSEP found in previous iterations.
     RMSEP_test_3comp<-RMSEP_test_3comp+RMSEP_3comp_function(descriptor_vector,parsed_smiles_alkanes,boiling_points,train_vector,test_vector)
-    
+
     #counter 2 is increased to avoid infinite loops
     counter2<-counter2+1
     }
-    
+
   #At the end of the inner while a total sum of RMSEP will be obtained. It will be divided by 4 to get the average
   RMSEP_test_3comp<-RMSEP_test_3comp/4
-  
+
   #"if operator" will used to replace the ideal RMSEP and the ideal vector for the current RMSEP average and descriptor vector in case that the current RMSEP is smaller than the ideal RMSEP.
   if (RMSEP_test_3comp<=ideal_RMSEP)
   {
     ideal_RMSEP  <- RMSEP_test_3comp
     ideal_vector <- descriptor_vector
-    
-    #Print the ideal vector and the RMSEP that it produces when a better result    is achieved 
+
+    #Print the ideal vector and the RMSEP that it produces when a better result    is achieved
     print(RMSEP_test_3comp)
     print(descriptor_vector)
   }
-  
+
 }
 #Print output of the algorithm
 print(ideal_vector)
@@ -208,7 +208,7 @@ After finding the best combination of descriptors according to the algorithm to 
 #Select a list of descriptors to build the model from rcdk
 descriptor_names   <-get.desc.names()[c(28, 31,  9,  2, 14, 44, 48, 21, 11,  4)]
 
-#Print descriptor names
+# #Print descriptor names
 print(descriptor_names)
 
 #Find the descriptors values for each alkane and putting them in a variable called "regression_data_alkanes"
@@ -343,12 +343,12 @@ In the previous plot in blue, it is displayed all the dataset, the outliers are 
 Finally, It was possible to make a very accurate model of the boiling points base in descriptors obtained from rcdk, that works for both training and test set.
 In other models as mentioned in Lie et all 7, better predictions have been achieved using similar methods of linear regression, with RMS of less than 5K. Consequently, the current model can still be improved using better algorithms to find the correct descriptors.
 
-#References
+References
 
-1. Wiener, H., Structural determination of paraffin boiling points. Journal of the American Chemical Society, 1947. 69(1): p. 17-20.
-2. Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer.
-3. Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017.
-4. Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007.
-5. Izrailev, S., tictoc: Functions for Timing R Scripts. R package version 1.0. URL: https://CRAN. R-project. org/package= tictoc, 2014.
-6. Millard, S.P., M.A. Kowarik, and M. Imports, Package 'EnvStats'. Package for environmental statistics. version, 2018. 2(1).
-7. Liu, S., C. Cao, and Z. Li, Approach to estimation and prediction for normal boiling point (NBP) of alkanes based on a novel molecular distance-edge (MDE) vector, ??. Journal of chemical information and computer sciences, 1998. 38(3): p. 387-394
+<!-- 1. Wiener, H., Structural determination of paraffin boiling points. Journal of the American Chemical Society, 1947. 69(1): p. 17-20. -->
+<!-- 2. Hernández, D., et al. Querying wikidata: Comparing sparql, relational and graph databases. in International Semantic Web Conference. 2016. Springer. -->
+<!-- 3. Guha, R. and M.R. Cherto, rcdk: Integrating the CDK with R. 2017. -->
+<!-- 4. Wehrens, R. and B.-H. Mevik, The pls package: principal component and partial least squares regression in R. 2007. -->
+<!-- 5. Izrailev, S., tictoc: Functions for Timing R Scripts. R package version 1.0. URL: https://CRAN. R-project. org/package= tictoc, 2014. -->
+<!-- 6. Millard, S.P., M.A. Kowarik, and M. Imports, Package 'EnvStats'. Package for environmental statistics. version, 2018. 2(1). -->
+<!-- 7. Liu, S., C. Cao, and Z. Li, Approach to estimation and prediction for normal boiling point (NBP) of alkanes based on a novel molecular distance-edge (MDE) vector, ??. Journal of chemical information and computer sciences, 1998. 38(3): p. 387-394 -->
