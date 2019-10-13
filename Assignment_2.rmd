@@ -9,7 +9,7 @@ output:
 This is Assignment 2 for Scientific Programming course of Systems Biology master at Maastricht University
 The goal of this assignment is to create a regression model to predict the boiling point of different kinds of alkanes based on other properties.
 The first step will be using different libraries to build this model. This will be useful to make a query about the alkanes with "wikidataQueryServiceR" extract their features with rcdk, perform the regression model with "pls" and plot the results with "gplots". The version of R will be R version 3.5.2 (2018-12-20).
-The Wikidata Query Service R provides the opportunity to make queries via SPARQL in an R environment. Package "rcdk" allows usage of "CDK" for chemoinformatics which is a Java framework. Between many possibilities this tool facilitates the obtention of load molecules, molecular descriptors, 2d view structures, etc. "PLS" allows multivariable regression methods, Partial Least Squares Regression, Principal Component Regression, and Canonical Powered Partial Least Squares.
+The Wikidata Query Service R provides the opportunity to make queries via SPARQL in an R environment. Package "rcdk" allows usage of "CDK" for chemoinformatics which is a Java framework. Between many possibilities this tool facilitates the obtention of load molecules, molecular descriptors, 2d view structures, etc. "PLS" allows multivariable regression methods, Partial Least Squares Regression, Principal Component Regression, and Canonical Powered Partial Least Squares.tictoc is a package to count the time of running code in different sessions that demmand longer time. EnvStats has the rosner test useful to find outliers.
 ```{r setup, include=TRUE}
 chooseCRANmirror(graphics=FALSE, ind=1)
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,7 +26,10 @@ if (!requireNamespace("gplots", quietly = TRUE))
     install.packages("gplots")
 if (!requireNamespace("tictoc", quietly = TRUE))
     install.packages("tictoc")
+if (!requireNamespace("EnvStats", quietly = TRUE))
+    install.packages("EnvStats")
 
+library("EnvStats")
 library("tictoc")
 library("WikidataQueryServiceR")
 library("rJava")
